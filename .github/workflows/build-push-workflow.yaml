@@ -1,4 +1,4 @@
-name: Deployment Workflow
+name: Build Image and Push To GHCR Workflow
 
 on:
   workflow_call:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   set-deployment-image-tag:
-    name: Set deployment image tag
+    name: Set deployment image tags
     runs-on: ubuntu-latest
     steps:
       - uses: FranzDiebold/github-env-vars-action@v2
@@ -24,6 +24,16 @@ jobs:
         env:
           TIMESTAMP: "${{ steps.current-time.outputs.formattedTime }}"
         run: echo "BUILD_IMAGE_TAG=$CI_SHA_SHORT-$TIMESTAMP" > /tmp/image_tag.env
+      -
+        name: Set Full Name
+        env:
+          TIMESTAMP: "${{ steps.current-time.outputs.formattedTime }}"
+        run: echo "BUILD_IMAGE_FULL_NAME=ghcr.io/$CI_REPOSITORY_OWNER_SLUG/$CI_REPOSITORY_NAME:$CI_SHA_SHORT-$TIMESTAMP" >> /tmp/image_tag.env
+      -
+        name: Set Full Branch Name
+        env:
+          TIMESTAMP: "${{ steps.current-time.outputs.formattedTime }}"
+        run: echo "BUILD_IMAGE_BRANCH_NAME=ghcr.io/$CI_REPOSITORY_OWNER_SLUG/$CI_REPOSITORY_NAME:$CI_REF_NAME" >> /tmp/image_tag.env
       -
         name: Display Tag
         run: cat /tmp/image_tag.env
@@ -58,7 +68,7 @@ jobs:
             --build-arg BUILD_DATE=$TIMESTAMP \
             --build-arg VCS_REF=$CI_REF_NAME \
             --build-arg VERSION=$BUILD_IMAGE_TAG \
-            --tag "ghcr.io/$CI_REPOSITORY_OWNER_SLUG/$CI_REPOSITORY_NAME:$BUILD_IMAGE_TAG" \
+            --tag "$BUILD_IMAGE_FULL_NAME" \
             .
       -
         name: Login to GitHub Container Registry
@@ -69,7 +79,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Push Image to GHCR
-        run: docker push "ghcr.io/$CI_REPOSITORY_OWNER_SLUG/$CI_REPOSITORY_NAME:$BUILD_IMAGE_TAG"
+        run: docker push "$BUILD_IMAGE_FULL_NAME"
 
   push-branch-tag-image-repository:
     if: contains(fromJSON(${{ inputs.push-branches }}), github.ref)
@@ -96,10 +106,10 @@ jobs:
         run: cat /tmp/image_tag.env >> $GITHUB_ENV
       -
         name: Pull Hash Tagged Image
-        run: docker pull "ghcr.io/$CI_REPOSITORY_OWNER_SLUG/$CI_REPOSITORY_NAME:$BUILD_IMAGE_TAG"
+        run: docker pull "$BUILD_IMAGE_FULL_NAME"
       -
         name: Update Branch Tag
-        run: docker image tag "ghcr.io/$CI_REPOSITORY_OWNER_SLUG/$CI_REPOSITORY_NAME:$BUILD_IMAGE_TAG" "ghcr.io/$CI_REPOSITORY_OWNER_SLUG/$CI_REPOSITORY_NAME:$CI_REF_NAME"
+        run: docker image tag "$BUILD_IMAGE_FULL_NAME" "$BUILD_IMAGE_BRANCH_NAME"
       -
         name: Push Branch Tag
-        run: docker push "ghcr.io/$CI_REPOSITORY_OWNER_SLUG/$CI_REPOSITORY_NAME:$CI_REF_NAME"
+        run: docker push "$BUILD_IMAGE_BRANCH_NAME"
