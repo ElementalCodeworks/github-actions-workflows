@@ -66,14 +66,15 @@ jobs:
       -
         name: Set Deployment Namespace
         run: echo "DEPLOYMENT_NAMESPACE=$(jq -r '.${{ github.ref_name }}' /tmp/deployment_namespaces.json)" >> $GITHUB_ENV
+      - uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
       -
-        uses: actions-hub/kubectl@master
-        env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        run: kubectl set image "deployment/$DEPLOYMENT_NAME" "$DEPLOYMENT_NAME=$DEPLOYMENT_IMAGE" --namespace="$DEPLOYMENT_NAMESPACE"
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
           DEPLOYMENT_IMAGE: ${{ env.BUILD_IMAGE_FULL_NAME }}
           DEPLOYMENT_NAME: ${{ inputs.k8s-deployment-name }}
-        with:
-          args: set image "deployment/$DEPLOYMENT_NAME" "$DEPLOYMENT_NAME=$DEPLOYMENT_IMAGE" --namespace="$DEPLOYMENT_NAMESPACE"
       -
         name: Remove Github Actions IP from security group
         if: always() && steps.ip-adder.conclusion == 'success'
