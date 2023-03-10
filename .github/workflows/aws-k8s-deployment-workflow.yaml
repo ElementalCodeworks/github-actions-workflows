@@ -16,13 +16,13 @@ on:
         required: true
         type: string
     secrets:
+      AWS_SECURITY_GROUP_ID:
+        required: true
       AWS_SECURITY_GROUP_MODIFIER_ACCESS_KEY_ID:
         required: true
       AWS_SECURITY_GROUP_MODIFIER_SECRET_KEY:
         required: true
       AWS_SECURITY_GROUP_REGION:
-        required: true
-      AWS_SECURITY_GROUP_NAME:
         required: true
       KUBE_CONFIG:
         required: true
