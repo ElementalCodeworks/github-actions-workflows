@@ -65,7 +65,7 @@ jobs:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
           DEPLOYMENT_IMAGE: ${{ env.BUILD_IMAGE_FULL_NAME }}
           DEPLOYMENT_NAME: ${{ inputs.k8s-deployment-name }}
-          DEPLOYMENT_NAMESPACE: ${{ fromJSON(${{ inputs.deploy-branches }}).${{ github.ref_name }} }}
+          DEPLOYMENT_NAMESPACE: fromJSON(${{ inputs.deploy-branches }}).${{ github.ref_name }}
         with:
           args: set image "deployment/$DEPLOYMENT_NAME" "$DEPLOYMENT_NAME=$DEPLOYMENT_IMAGE" --namespace="$DEPLOYMENT_NAMESPACE"
       -
