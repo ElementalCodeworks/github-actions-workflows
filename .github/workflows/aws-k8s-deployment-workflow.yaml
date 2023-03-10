@@ -59,9 +59,11 @@ jobs:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_SECURITY_GROUP_REGION }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECURITY_GROUP_MODIFIER_SECRET_KEY }}
           AWS_SECURITY_GROUP_NAME: ${{ secrets.AWS_SECURITY_GROUP_NAME }}
+      - name: Write Deployment Namespaces
+        run: echo '${{ inputs.deploy-branches }}' > /tmp/deployment_namespaces.json
       -
         name: Set Deployment Namespace
-        run: echo "DEPLOYMENT_NAMESPACE=$(jq -r '.${{ github.ref_name }}' <<< '${{ inputs.deploy-branches }}'" >> $GITHUB_ENV
+        run: echo "DEPLOYMENT_NAMESPACE=$(jq -r '.${{ github.ref_name }}' /tmp/deployment_namespaces.json)" >> $GITHUB_ENV
       -
         uses: actions-hub/kubectl@master
         env:
