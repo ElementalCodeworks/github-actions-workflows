@@ -17,7 +17,7 @@ on:
         required: true
       AWS_SECURITY_GROUP_MODIFIER_SECRET_KEY:
         required: true
-      AWS_SECURITY_GROUP_MODIFIER_REGION:
+      AWS_SECURITY_GROUP_REGION:
         required: true
       AWS_SECURITY_GROUP_NAME:
         required: true
@@ -44,7 +44,7 @@ jobs:
           aws ec2 authorize-security-group-ingress --group-name ${{ env.AWS_SECURITY_GROUP_NAME }} --protocol tcp --port 6443 --cidr ${{ steps.ip.outputs.ipv4 }}/32
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECURITY_GROUP_MODIFIER_ACCESS_KEY_ID }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_SECURITY_GROUP_MODIFIER_REGION }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_SECURITY_GROUP_REGION }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECURITY_GROUP_MODIFIER_SECRET_KEY }}
           AWS_SECURITY_GROUP_NAME: ${{ secrets.AWS_SECURITY_GROUP_NAME }}
 
@@ -88,6 +88,6 @@ jobs:
           aws ec2 revoke-security-group-ingress --group-name ${{ env.AWS_SECURITY_GROUP_NAME }} --protocol tcp --port 6443 --cidr ${{ steps.ip.outputs.ipv4 }}/32
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECURITY_GROUP_MODIFIER_ACCESS_KEY_ID }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_SECURITY_GROUP_MODIFIER_REGION }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_SECURITY_GROUP_REGION }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECURITY_GROUP_MODIFIER_SECRET_KEY }}
           AWS_SECURITY_GROUP_NAME: ${{ secrets.AWS_SECURITY_GROUP_NAME }}
