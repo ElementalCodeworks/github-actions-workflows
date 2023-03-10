@@ -21,6 +21,8 @@ on:
         required: true
       AWS_SECURITY_GROUP_NAME:
         required: true
+      KUBE_CONFIG:
+        required: true
 
 jobs:
   build-push-images:
