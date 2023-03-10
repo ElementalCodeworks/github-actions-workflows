@@ -73,7 +73,7 @@ jobs:
           args: set image "deployment/$DEPLOYMENT_NAME" "$DEPLOYMENT_IMAGE" --namespace="$CI_REF_NAME"
 
   remove-runner-from-aws-security-group:
-    if: always()
+    if: always() && needs.add-runner-to-aws-security-group.result == 'success'
     name: Remove Runner IP from Security Group
     runs-on: ubuntu-latest
     needs: [deploy-built-image-to-kubernetes, add-runner-to-aws-security-group]
