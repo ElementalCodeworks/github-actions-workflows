@@ -83,7 +83,7 @@ jobs:
 
   push-branch-tag-image-repository:
     if:
-      contains(fromJSON(${{ inputs.push-branches }}), github.ref_name)
+      contains(fromJSON(inputs.push-branches), github.ref_name)
     name: Push Branch Tag to Repository
     runs-on: ubuntu-latest
     needs: [build-image]
